@@ -33,13 +33,7 @@ export const setupWebSocket = (server: any) => {
     ws.on("close", () => {
       if (currentRoom && rooms[currentRoom]) {
         rooms[currentRoom].delete(ws);
-
-        if (rooms[currentRoom].size === 0) {
-          delete rooms[currentRoom];
-        }
       }
-
-      console.log("Client disconnected");
     });
   });
 };
