@@ -25,3 +25,13 @@
 - Goal: real-time collaboration like Google Docs for code
 
 EOF
+
+## WebSocket Flow
+
+- Client connects via WebSocket
+- Client joins a room
+- Code changes are broadcast to other users in the same room
+- Server manages rooms and connections
+
+Simple flow:
+Client → Server → Room → Other Clients
