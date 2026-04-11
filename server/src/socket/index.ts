@@ -1,17 +1,39 @@
 import { WebSocketServer } from "ws";
 
+const rooms: Record<string, Set<any>> = {};
+
 export const setupWebSocket = (server: any) => {
   const wss = new WebSocketServer({ server });
 
   wss.on("connection", (ws) => {
-    console.log("Client connected");
+    let currentRoom = "";
 
     ws.on("message", (message) => {
-      console.log("Received:", message.toString());
+      const data = JSON.parse(message.toString());
+
+      if (data.type === "join") {
+        currentRoom = data.room;
+
+        if (!rooms[currentRoom]) {
+          rooms[currentRoom] = new Set();
+        }
+
+        rooms[currentRoom].add(ws);
+      }
+
+      if (data.type === "code-change") {
+        rooms[currentRoom]?.forEach((client) => {
+          if (client !== ws) {
+            client.send(JSON.stringify(data));
+          }
+        });
+      }
     });
 
     ws.on("close", () => {
-      console.log("Client disconnected");
+      if (currentRoom && rooms[currentRoom]) {
+        rooms[currentRoom].delete(ws);
+      }
     });
   });
 };
