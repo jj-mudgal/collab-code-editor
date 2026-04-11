@@ -1,3 +1,4 @@
+import "./socket";
 import Editor from "./components/layout/Editor";
 
 function App() {
