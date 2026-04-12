@@ -1,9 +1,15 @@
-export const socket = new WebSocket("ws://localhost:5000");
+let editorRef: any;
 
-socket.onopen = () => {
-  console.log("Connected to server");
+export const setEditor = (editor: any) => {
+  editorRef = editor;
 };
 
+export const socket = new WebSocket("ws://localhost:5000");
+
 socket.onmessage = (event) => {
-  console.log("Message:", event.data);
+  const data = JSON.parse(event.data);
+
+  if (editorRef && data.type === "code-change") {
+    editorRef.setValue(data.code);
+  }
 };
