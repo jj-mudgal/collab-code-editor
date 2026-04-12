@@ -5,11 +5,34 @@ type User = {
 
 const UserList = ({ users }: { users: User[] }) => {
   return (
-    <div style={{ padding: "10px", borderRight: "1px solid #ccc" }}>
-      <h3>Users</h3>
+    <div
+      style={{
+        width: "200px",
+        padding: "10px",
+        borderRight: "1px solid #ccc",
+        background: "#f9f9f9",
+      }}
+    >
+      <h3>Active Users</h3>
       {users.map((u, i) => (
-        <div key={i} style={{ color: u.color }}>
-          ● {u.username}
+        <div
+          key={i}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "5px",
+          }}
+        >
+          <span
+            style={{
+              width: "10px",
+              height: "10px",
+              background: u.color,
+              borderRadius: "50%",
+              marginRight: "8px",
+            }}
+          />
+          {u.username}
         </div>
       ))}
     </div>
