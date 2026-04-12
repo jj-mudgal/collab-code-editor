@@ -1,36 +1,24 @@
-import { useState } from "react";
-import MonacoEditor from "@monaco-editor/react";
+import Editor from "@monaco-editor/react";
+import { socket } from "../../socket";
 
-export default function Editor() {
-  const [language, setLanguage] = useState("javascript");
+const CodeEditor = () => {
+  const handleChange = (value: string | undefined) => {
+    socket.send(
+      JSON.stringify({
+        type: "code-change",
+        code: value,
+      })
+    );
+  };
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      <div style={{
-        width: "250px",
-        background: "#1e1e1e",
-        color: "#ccc",
-        padding: "10px"
-      }}>
-        <h3>Languages</h3>
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-        >
-          <option value="javascript">JavaScript</option>
-          <option value="python">Python</option>
-          <option value="cpp">C++</option>
-        </select>
-      </div>
-
-      <div style={{ flex: 1 }}>
-        <MonacoEditor
-          height="100%"
-          language={language}
-          defaultValue="// start coding..."
-          theme="vs-dark"
-        />
-      </div>
-    </div>
+    <Editor
+      height="90vh"
+      defaultLanguage="javascript"
+      defaultValue="// start coding"
+      onChange={handleChange}
+    />
   );
-}
+};
+
+export default CodeEditor;
