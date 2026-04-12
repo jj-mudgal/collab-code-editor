@@ -5,14 +5,20 @@ import { socket } from "./socket";
 
 function App() {
   const [users, setUsers] = useState([]);
+  const [messages, setMessages] = useState<string[]>([]);
 
   useEffect(() => {
     socket.send(JSON.stringify({ type: "join", room: "room1" }));
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+
       if (data.type === "users") {
         setUsers(data.users);
+      }
+
+      if (data.type === "notification") {
+        setMessages((prev) => [...prev, data.message]);
       }
     };
   }, []);
@@ -20,7 +26,12 @@ function App() {
   return (
     <div style={{ display: "flex" }}>
       <UserList users={users} />
-      <Editor />
+      <div>
+        <Editor />
+        {messages.map((m, i) => (
+          <div key={i}>{m}</div>
+        ))}
+      </div>
     </div>
   );
 }

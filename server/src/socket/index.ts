@@ -37,16 +37,11 @@ export const setupWebSocket = (server: any) => {
 
         rooms[currentRoom].add(client);
 
-        const users = Array.from(rooms[currentRoom]).map((c) => ({
-          username: c.username,
-          color: c.color,
-        }));
-
         rooms[currentRoom].forEach((c) => {
           c.ws.send(
             JSON.stringify({
-              type: "users",
-              users,
+              type: "notification",
+              message: `${client.username} joined`,
             })
           );
         });
@@ -58,6 +53,15 @@ export const setupWebSocket = (server: any) => {
         rooms[currentRoom].forEach((c) => {
           if (c.ws === ws) {
             rooms[currentRoom].delete(c);
+
+            rooms[currentRoom].forEach((c2) => {
+              c2.ws.send(
+                JSON.stringify({
+                  type: "notification",
+                  message: `${c.username} left`,
+                })
+              );
+            });
           }
         });
       }
