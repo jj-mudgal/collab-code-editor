@@ -1,12 +1,28 @@
 import Editor from "@monaco-editor/react";
 import { socket, setEditor } from "../../socket";
 
+let isRemoteUpdate = false;
+
 const CodeEditor = () => {
   const handleMount = (editor: any) => {
     setEditor(editor);
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === "code-change") {
+        isRemoteUpdate = true;
+        editor.setValue(data.code);
+      }
+    };
   };
 
   const handleChange = (value: string | undefined) => {
+    if (isRemoteUpdate) {
+      isRemoteUpdate = false;
+      return;
+    }
+
     socket.send(
       JSON.stringify({
         type: "code-change",
