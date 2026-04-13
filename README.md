@@ -14,10 +14,15 @@
 
 ## Roadmap
 [ ] Editor UI
+
 [ ] WebSocket sync
+
 [ ] Multi-user rooms
+
 [ ] Cursor tracking
+
 [ ] OT/CRDT integration
+
 [ ] Code execution sandbox
 
 ## Notes
