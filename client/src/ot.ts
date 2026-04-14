@@ -15,3 +15,19 @@ export const applyOperation = (text: string, op: Operation): string => {
 
   return text;
 };
+
+export const transform = (op1: Operation, op2: Operation): Operation => {
+  if (op1.type === "insert" && op2.type === "insert") {
+    if (op1.index <= op2.index) {
+      return { ...op2, index: op2.index + 1 };
+    }
+  }
+
+  if (op1.type === "delete" && op2.type === "insert") {
+    if (op1.index < op2.index) {
+      return { ...op2, index: op2.index - 1 };
+    }
+  }
+
+  return op2;
+};
