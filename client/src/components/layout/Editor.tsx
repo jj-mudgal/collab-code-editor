@@ -1,20 +1,12 @@
 import Editor from "@monaco-editor/react";
-import { socket, setEditor } from "../../socket";
+import { sendCodeChange } from "../../socket";
+import { setupCursorTracking } from "../../cursor";
 
 let isRemoteUpdate = false;
 
 const CodeEditor = () => {
   const handleMount = (editor: any) => {
-    setEditor(editor);
-
-    socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      if (data.type === "code-change") {
-        isRemoteUpdate = true;
-        editor.setValue(data.code);
-      }
-    };
+    setupCursorTracking(editor);
   };
 
   const handleChange = (value: string | undefined) => {
@@ -23,12 +15,7 @@ const CodeEditor = () => {
       return;
     }
 
-    socket.send(
-      JSON.stringify({
-        type: "code-change",
-        code: value,
-      })
-    );
+    if (value) sendCodeChange(value);
   };
 
   return (
