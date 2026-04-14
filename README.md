@@ -40,3 +40,19 @@ EOF
 
 Simple flow:
 Client → Server → Room → Other Clients
+
+## Sync Strategy: OT vs CRDT
+
+This project uses a simplified Operational Transformation (OT) model:
+
+- Operations (insert/delete) are transformed against concurrent edits
+- Ensures consistency across multiple users
+- Lightweight compared to full CRDT implementations
+
+### Why OT over CRDT?
+- Easier to implement for linear text editing
+- Lower memory overhead
+- Suitable for real-time collaborative editors
+
+Future scope:
+- Migrate to CRDT (Yjs / Automerge) for scalability
