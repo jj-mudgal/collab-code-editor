@@ -1,11 +1,14 @@
 import express from "express";
 import http from "http";
 import { setupWebSocket } from "./socket";
+import versionRoutes from "./routes/versionRoutes";
 
 const app = express();
 const server = http.createServer(app);
 
 setupWebSocket(server);
+
+app.use("/versions", versionRoutes);
 
 app.get("/", (_, res) => {
   res.send("Server running");
