@@ -1,4 +1,5 @@
 import { WebSocketServer } from "ws";
+import { createVersion } from "../versioning/versionStore";
 
 const clients = new Set<any>();
 
@@ -10,6 +11,16 @@ export const setupWebSocket = (server: any) => {
 
     ws.on("message", (message) => {
       const data = JSON.parse(message.toString());
+
+      if (data.type === "code-change") {
+        createVersion(data.code);
+
+        clients.forEach((client) => {
+          if (client !== ws) {
+            client.send(JSON.stringify(data));
+          }
+        });
+      }
 
       if (data.type === "cursor-move") {
         clients.forEach((client) => {
