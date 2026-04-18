@@ -1,22 +1,31 @@
 import { exec } from "child_process";
 
+const buildCommand = (code: string, language: string) => {
+  const safeCode = code.replace(/"/g, '\\"');
+
+  switch (language) {
+    case "javascript":
+      return `node -e "${safeCode}"`;
+    case "python":
+      return `python3 -c "${safeCode}"`;
+    case "bash":
+      return `bash -c "${safeCode}"`;
+    default:
+      throw new Error("Unsupported language");
+  }
+};
+
 export const executeCode = (code: string, language: string): Promise<string> => {
   return new Promise((resolve) => {
-    let command = "";
+    try {
+      const command = buildCommand(code, language);
 
-    if (language === "javascript") {
-      command = `node -e "${code.replace(/"/g, '\\"')}"`;
-    } else if (language === "python") {
-      command = `python3 -c "${code.replace(/"/g, '\\"')}"`;
-    } else {
-      return resolve("Unsupported language");
+      exec(command, { timeout: 3000 }, (err, stdout, stderr) => {
+        if (err) return resolve(stderr || "Execution error");
+        resolve(stdout);
+      });
+    } catch (e: any) {
+      resolve(e.message);
     }
-
-    exec(command, { timeout: 3000 }, (err, stdout, stderr) => {
-      if (err) {
-        return resolve(stderr || "Execution error");
-      }
-      resolve(stdout);
-    });
   });
 };
