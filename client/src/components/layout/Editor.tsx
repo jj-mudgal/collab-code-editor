@@ -2,6 +2,7 @@ import Editor from "@monaco-editor/react";
 import { socket } from "../../socket";
 import { setupCursorManager } from "../../cursorManager";
 import { useState } from "react";
+import { debounce } from "../../utils/debounce";
 
 let isRemoteUpdate = false;
 
@@ -21,13 +22,25 @@ const CodeEditor = () => {
     }
   };
 
+  const sendChange = debounce((val: string) => {
+    socket.send(
+      JSON.stringify({
+        type: "code-change",
+        code: val,
+      })
+    );
+  }, 300);
+
   const handleChange = (value: string | undefined) => {
     if (isRemoteUpdate) {
       isRemoteUpdate = false;
       return;
     }
 
-    if (value) setCode(value);
+    if (value) {
+      setCode(value);
+      sendChange(value);
+    }
   };
 
   const runCode = () => {
