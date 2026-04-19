@@ -16,7 +16,15 @@ const Chat = () => {
       const data = JSON.parse(event.data);
 
       if (data.type === "chat") {
-        setMessages((prev) => [...prev, data]);
+        setMessages((prev) => {
+          if (prev.find((m) => m.timestamp === data.timestamp)) {
+            return prev;
+          }
+
+          return [...prev, data].sort(
+            (a, b) => a.timestamp - b.timestamp
+          );
+        });
       }
     };
   }, []);
