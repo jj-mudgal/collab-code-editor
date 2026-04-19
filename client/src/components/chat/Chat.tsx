@@ -16,15 +16,7 @@ const Chat = () => {
       const data = JSON.parse(event.data);
 
       if (data.type === "chat") {
-        setMessages((prev) => {
-          if (prev.find((m) => m.timestamp === data.timestamp)) {
-            return prev;
-          }
-
-          return [...prev, data].sort(
-            (a, b) => a.timestamp - b.timestamp
-          );
-        });
+        setMessages((prev) => [...prev, data]);
       }
     };
   }, []);
@@ -40,20 +32,23 @@ const Chat = () => {
   };
 
   return (
-    <div style={{ width: "250px", borderLeft: "1px solid #ccc" }}>
+    <div style={{ width: "250px", borderLeft: "1px solid #ccc", padding: "10px" }}>
       <h3>Chat</h3>
-      <div style={{ height: "300px", overflowY: "auto" }}>
+      <div style={{ height: "300px", overflowY: "auto", marginBottom: "10px" }}>
         {messages.map((m, i) => (
-          <div key={i}>
+          <div key={i} style={{ marginBottom: "5px" }}>
             <strong>{m.username}:</strong> {m.message}
           </div>
         ))}
       </div>
       <input
+        style={{ width: "100%", marginBottom: "5px" }}
         value={input}
         onChange={(e) => setInput(e.target.value)}
       />
-      <button onClick={sendMessage}>Send</button>
+      <button style={{ width: "100%" }} onClick={sendMessage}>
+        Send
+      </button>
     </div>
   );
 };
