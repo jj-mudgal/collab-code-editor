@@ -1,17 +1,11 @@
-export const computeDiff = (oldStr: string, newStr: string) => {
-  const diffs: any[] = [];
+export const computeDelta = (prev: string, curr: string) => {
+  let delta = "";
 
-  let i = 0;
-  while (i < oldStr.length || i < newStr.length) {
-    if (oldStr[i] !== newStr[i]) {
-      diffs.push({
-        index: i,
-        from: oldStr[i] || "",
-        to: newStr[i] || "",
-      });
+  for (let i = 0; i < curr.length; i++) {
+    if (curr[i] !== prev[i]) {
+      delta += curr[i];
     }
-    i++;
   }
 
-  return diffs;
+  return delta;
 };
