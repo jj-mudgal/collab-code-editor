@@ -1,23 +1,28 @@
 import { WebSocketServer } from "ws";
-import { handleChat } from "./handlers/chat";
+import { createVersion } from "../versioning/versionStore";
+import { shouldSave } from "../versioning/debounce";
 
-const clients = new Map<any, { room: string; username: string }>();
+const clients = new Set<any>();
 
 export const setupWebSocket = (server: any) => {
   const wss = new WebSocketServer({ server });
 
   wss.on("connection", (ws) => {
-    clients.set(ws, { room: "default", username: "anon" });
+    clients.add(ws);
 
     ws.on("message", (message) => {
       const data = JSON.parse(message.toString());
 
-      if (data.type === "join") {
-        clients.set(ws, { room: data.room, username: data.username });
-      }
+      if (data.type === "code-change") {
+        if (shouldSave()) {
+          createVersion(data.code);
+        }
 
-      if (data.type === "chat") {
-        handleChat(ws, clients, data);
+        clients.forEach((client) => {
+          if (client !== ws) {
+            client.send(JSON.stringify(data));
+          }
+        });
       }
     });
 
