@@ -1,33 +1,32 @@
 import { WebSocketServer } from "ws";
-import { createVersion } from "../versioning/versionStore";
-import { shouldSave } from "../versioning/debounce";
-
-const clients = new Set<any>();
+import { joinRoom, leaveRoom, getRoomClients } from "../rooms/roomManager";
+import { publish, subscribe } from "../pubsub/pubsub";
 
 export const setupWebSocket = (server: any) => {
   const wss = new WebSocketServer({ server });
 
   wss.on("connection", (ws) => {
-    clients.add(ws);
+    let currentRoom = "";
 
     ws.on("message", (message) => {
       const data = JSON.parse(message.toString());
 
-      if (data.type === "code-change") {
-        if (shouldSave()) {
-          createVersion(data.code);
-        }
+      if (data.type === "join") {
+        currentRoom = data.room;
+        joinRoom(currentRoom, ws);
 
-        clients.forEach((client) => {
-          if (client !== ws) {
-            client.send(JSON.stringify(data));
-          }
+        subscribe(currentRoom, (msg) => {
+          ws.send(JSON.stringify(msg));
         });
+      }
+
+      if (data.type === "code-change") {
+        publish(currentRoom, data);
       }
     });
 
     ws.on("close", () => {
-      clients.delete(ws);
+      if (currentRoom) leaveRoom(currentRoom, ws);
     });
   });
 };
