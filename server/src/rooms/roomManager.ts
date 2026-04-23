@@ -10,7 +10,14 @@ export const joinRoom = (roomId: string, client: Client) => {
 };
 
 export const leaveRoom = (roomId: string, client: Client) => {
-  rooms.get(roomId)?.delete(client);
+  const room = rooms.get(roomId);
+  if (!room) return;
+
+  room.delete(client);
+
+  if (room.size === 0) {
+    rooms.delete(roomId); // cleanup empty room
+  }
 };
 
 export const getRoomClients = (roomId: string) => {
