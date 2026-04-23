@@ -16,7 +16,7 @@ export const leaveRoom = (roomId: string, client: Client) => {
   room.delete(client);
 
   if (room.size === 0) {
-    rooms.delete(roomId); // cleanup empty room
+    rooms.delete(roomId);
   }
 };
 
