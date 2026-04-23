@@ -19,8 +19,11 @@ export const setupWebSocket = (server: any) => {
         subscribe(currentRoom, (msg) => {
           ws.send(JSON.stringify(msg));
         });
+
+        // send latest state on join
+        handleMessage(currentRoom, { type: "request-sync" }, ws);
       } else {
-        handleMessage(currentRoom, data);
+        handleMessage(currentRoom, data, ws);
       }
     });
 
