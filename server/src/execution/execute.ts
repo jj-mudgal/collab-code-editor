@@ -1,4 +1,4 @@
-import { exec } from "child_process";
+const { exec } = require("child_process");
 
 const buildCommand = (code: string, language: string) => {
   const safeCode = code.replace(/"/g, '\\"');
@@ -13,29 +13,32 @@ const buildCommand = (code: string, language: string) => {
   }
 };
 
-export const executeCode = (code: string, language: string): Promise<string> => {
+const executeCode = (code: string, language: string): Promise<string> => {
   return new Promise((resolve) => {
     try {
       const command = buildCommand(code, language);
 
-      exec(
-        command,
-        {
-          timeout: 2000,
-          maxBuffer: 1024 * 1024,
-        },
-        (err, stdout, stderr) => {
-          if (err) {
-            if ((err as any).killed) {
-              return resolve("Execution timed out");
-            }
-            return resolve(stderr || "Execution error");
-          }
-          resolve(stdout || "No output");
-        }
-      );
+      const child = exec(command, {
+        timeout: 1500,
+        maxBuffer: 1024 * 512,
+      });
+
+      let output = "";
+      let error = "";
+
+      child.stdout?.on("data", (d: any) => (output += d));
+      child.stderr?.on("data", (d: any) => (error += d));
+
+      child.on("close", () => {
+        if (error) return resolve(error);
+        resolve(output || "No output");
+      });
+
+      child.on("error", () => resolve("Execution failed"));
     } catch (e: any) {
-      resolve(e.message);
+      resolve("Sandbox error: " + e.message);
     }
   });
 };
+
+module.exports = { executeCode };
