@@ -3,6 +3,7 @@ import { joinRoom, leaveRoom } from "../rooms/roomManager";
 import { subscribe } from "../pubsub/pubsub";
 import { handleMessage } from "./handler";
 import { setupHeartbeat } from "./heartbeat";
+import { validateMessage } from "./validate";
 
 export const setupWebSocket = (server: any) => {
   const wss = new WebSocketServer({ server });
@@ -10,7 +11,6 @@ export const setupWebSocket = (server: any) => {
   setInterval(() => {
     wss.clients.forEach((ws: any) => {
       if (!ws.isAlive) return ws.terminate();
-
       ws.isAlive = false;
       ws.ping();
     });
@@ -18,11 +18,18 @@ export const setupWebSocket = (server: any) => {
 
   wss.on("connection", (ws: any) => {
     setupHeartbeat(ws);
-
     let currentRoom = "";
 
     ws.on("message", (message) => {
-      const data = JSON.parse(message.toString());
+      let data;
+
+      try {
+        data = JSON.parse(message.toString());
+      } catch {
+        return;
+      }
+
+      if (!validateMessage(data)) return;
 
       if (data.type === "join") {
         currentRoom = data.room;
