@@ -1,4 +1,4 @@
-const { exec } = require("child_process");
+import { exec } from "child_process";
 
 const buildCommand = (code: string, language: string) => {
   const safeCode = code.replace(/"/g, '\\"');
@@ -13,7 +13,7 @@ const buildCommand = (code: string, language: string) => {
   }
 };
 
-const executeCode = (code: string, language: string): Promise<string> => {
+export const executeCode = (code: string, language: string): Promise<string> => {
   return new Promise((resolve) => {
     try {
       const command = buildCommand(code, language);
@@ -26,8 +26,8 @@ const executeCode = (code: string, language: string): Promise<string> => {
       let output = "";
       let error = "";
 
-      child.stdout?.on("data", (d: any) => (output += d));
-      child.stderr?.on("data", (d: any) => (error += d));
+      child.stdout?.on("data", (d) => (output += d));
+      child.stderr?.on("data", (d) => (error += d));
 
       child.on("close", () => {
         if (error) return resolve(error);
@@ -40,5 +40,3 @@ const executeCode = (code: string, language: string): Promise<string> => {
     }
   });
 };
-
-module.exports = { executeCode };
