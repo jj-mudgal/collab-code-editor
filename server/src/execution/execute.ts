@@ -2,7 +2,6 @@ import { exec } from "child_process";
 
 const buildCommand = (code: string, language: string) => {
   const safeCode = code.replace(/"/g, '\\"');
-
   switch (language) {
     case "javascript":
       return `node -e "${safeCode}"`;
@@ -17,26 +16,15 @@ export const executeCode = (code: string, language: string): Promise<string> => 
   return new Promise((resolve) => {
     try {
       const command = buildCommand(code, language);
-
-      const child = exec(command, {
-        timeout: 1500,
-        maxBuffer: 1024 * 512,
+      exec(command, { timeout: 2000, maxBuffer: 1024 * 1024 }, (err, stdout, stderr) => {
+        if (err) {
+          if ((err as any).killed) return resolve("Execution timed out");
+          return resolve(stderr || "Execution error");
+        }
+        resolve(stdout || "No output");
       });
-
-      let output = "";
-      let error = "";
-
-      child.stdout?.on("data", (d) => (output += d));
-      child.stderr?.on("data", (d) => (error += d));
-
-      child.on("close", () => {
-        if (error) return resolve(error);
-        resolve(output || "No output");
-      });
-
-      child.on("error", () => resolve("Execution failed"));
     } catch (e: any) {
-      resolve("Sandbox error: " + e.message);
+      resolve(e.message);
     }
   });
 };
