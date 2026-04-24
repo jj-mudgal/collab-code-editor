@@ -4,6 +4,7 @@ import { subscribe } from "../pubsub/pubsub";
 import { handleMessage } from "./handler";
 import { setupHeartbeat } from "./heartbeat";
 import { validateMessage } from "./validate";
+import { isRateLimited } from "./rateLimit";
 
 export const setupWebSocket = (server: any) => {
   const wss = new WebSocketServer({ server });
@@ -21,6 +22,8 @@ export const setupWebSocket = (server: any) => {
     let currentRoom = "";
 
     ws.on("message", (message) => {
+      if (isRateLimited(ws)) return;
+
       let data;
 
       try {
