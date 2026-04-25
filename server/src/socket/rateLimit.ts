@@ -1,6 +1,6 @@
 const limits = new Map<any, { count: number; time: number }>();
 
-const WINDOW = 1000; // 1s
+const WINDOW = 1000;
 const MAX = 20;
 
 export const isRateLimited = (ws: any) => {
@@ -19,6 +19,5 @@ export const isRateLimited = (ws: any) => {
   }
 
   entry.count++;
-
   return entry.count > MAX;
 };

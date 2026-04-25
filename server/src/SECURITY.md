@@ -3,7 +3,7 @@
 ## Code Execution Risks
 - Infinite loops → handled via timeout
 - Large output → limited via maxBuffer
-- Command injection → partially mitigated (needs sandboxing via Docker)
+- Command injection → partially mitigated (needs Docker sandbox)
 
 ## WebSocket Risks
 - Malformed payloads → validated
