@@ -1,9 +1,10 @@
 import { randomUUID } from "crypto";
+import { log } from "../../logger/logger";
 
 type Version = {
   id: string;
-  content?: string; // only for checkpoints
-  delta?: string;   // diff from previous
+  content?: string;
+  delta?: string;
   baseVersionId?: string;
   timestamp: number;
   isCheckpoint: boolean;
@@ -35,6 +36,12 @@ export const createVersion = (content: string) => {
   }
 
   versions.push(newVersion);
+
+  log("info", "Version created", {
+    id: newVersion.id,
+    checkpoint: newVersion.isCheckpoint,
+  });
+
   return newVersion;
 };
 
