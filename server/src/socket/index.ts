@@ -1,20 +1,20 @@
 import { WebSocketServer } from "ws";
 import { joinRoom, leaveRoom } from "../rooms/roomManager";
 import { subscribe } from "../pubsub/pubsub";
-import { handleMessage } from "./handler";
 import { setupHeartbeat } from "./heartbeat";
-import { log } from "../logger/logger";
+import { validateMessage } from "./validate";
+import { isRateLimited } from "./rateLimit";
+import { emitEvent } from "../events/eventBus";
+import { registerHandlers } from "../events/registerHandlers";
 
 export const setupWebSocket = (server: any) => {
   const wss = new WebSocketServer({ server });
 
+  registerHandlers();
+
   setInterval(() => {
     wss.clients.forEach((ws: any) => {
-      if (!ws.isAlive) {
-        log("warn", "Terminating dead connection");
-        return ws.terminate();
-      }
-
+      if (!ws.isAlive) return ws.terminate();
       ws.isAlive = false;
       ws.ping();
     });
@@ -22,37 +22,35 @@ export const setupWebSocket = (server: any) => {
 
   wss.on("connection", (ws: any) => {
     setupHeartbeat(ws);
-    log("info", "New client connected");
-
     let currentRoom = "";
 
     ws.on("message", (message) => {
-      const start = Date.now();
-      const data = JSON.parse(message.toString());
+      if (isRateLimited(ws)) return;
 
-      log("info", "Incoming message", { type: data.type });
+      let data;
+      try {
+        data = JSON.parse(message.toString());
+      } catch {
+        return;
+      }
+
+      if (!validateMessage(data)) return;
 
       if (data.type === "join") {
         currentRoom = data.room;
         joinRoom(currentRoom, ws);
 
-        log("info", "User joined room", { room: currentRoom });
-
         subscribe(currentRoom, (msg) => {
           ws.send(JSON.stringify(msg));
         });
 
-        handleMessage(currentRoom, { type: "request-sync" }, ws);
+        emitEvent("request-sync", {}, ws, currentRoom);
       } else {
-        handleMessage(currentRoom, data, ws);
+        emitEvent(data.type, data, ws, currentRoom);
       }
-
-      const latency = Date.now() - start;
-      log("info", "Message processed", { latency });
     });
 
     ws.on("close", () => {
-      log("info", "Client disconnected");
       if (currentRoom) leaveRoom(currentRoom, ws);
     });
   });
