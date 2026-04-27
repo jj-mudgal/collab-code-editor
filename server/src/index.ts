@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 
 app.use(cors({
-  origin: "*", // change to frontend URL in production
+  origin: "*",
 }));
 
 setupWebSocket(server);
