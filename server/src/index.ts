@@ -1,14 +1,16 @@
 import express from "express";
 import http from "http";
+import cors from "cors";
 import { setupWebSocket } from "./socket";
-import versionRoutes from "./routes/versionRoutes";
 
 const app = express();
 const server = http.createServer(app);
 
-setupWebSocket(server);
+app.use(cors({
+  origin: "*", // change to frontend URL in production
+}));
 
-app.use("/versions", versionRoutes);
+setupWebSocket(server);
 
 app.get("/", (_, res) => {
   res.send("Server running");
