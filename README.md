@@ -1,5 +1,19 @@
 # Real-time Collaborative Code Editor
 
+![React](https://img.shields.io/badge/Frontend-React%2019-blue)
+![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6)
+![Node.js](https://img.shields.io/badge/Backend-Node.js-339933)
+![WebSockets](https://img.shields.io/badge/Realtime-WebSockets-purple)
+![Monaco](https://img.shields.io/badge/Editor-Monaco-007ACC)
+![Docker](https://img.shields.io/badge/Container-Docker-2496ED)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
+
+![Multi-user](https://img.shields.io/badge/Feature-Multi--User%20Editing-brightgreen)
+![Live Sync](https://img.shields.io/badge/Feature-Live%20Sync-success)
+![Code Execution](https://img.shields.io/badge/Feature-Code%20Execution-critical)
+![Versioning](https://img.shields.io/badge/Feature-Version%20History-blueviolet)
+![Chat](https://img.shields.io/badge/Feature-In--Editor%20Chat-yellow)
+
 > A Google Docs-style collaborative coding environment — edit code together, live, with multiple users.
 
 {paste image — screenshot of the full app open in a browser, showing the Monaco editor on the left and the chat panel on the right, ideally with some code typed in and a chat message visible}
