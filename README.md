@@ -100,7 +100,7 @@ Each edit is expressed as an **operation** — an `insert` or `delete` at a char
 
 ---
 
-## (o_o) Project Structure
+## *:･✧Project Structure
 
 ```
 |-- client/
@@ -196,7 +196,7 @@ PORT=5000
 
 ---
 
-## (╥_╥) Security Notes
+## *:･✧Security Notes
 
 - Malformed WebSocket payloads are validated and dropped
 - Rate limiting: max 20 messages per second per client
