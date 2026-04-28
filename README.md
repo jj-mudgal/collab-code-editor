@@ -37,46 +37,17 @@
 
 ## *:･✧Architecture
 
-```
-Client (React + Monaco)
-    |
-    |  WebSocket (ws://)
-    v
-Server (Node.js + Express)
-    |
-    |-- Room Manager      — tracks clients per room
-    |-- PubSub            — broadcasts messages within a room
-    |-- Event Bus         — decoupled handler registration
-    |-- OT Engine         — transforms concurrent operations
-    |-- Version Store     — checkpoint + delta versioning
-    `-- Code Executor     — sandboxed code execution
-```
-
-{paste image — a simple architecture diagram if you have one drawn out, OR a screenshot of the terminal showing the server starting up and a client connecting with the JSON logs printed}
+<p align="center">
+  <img src="./diagrams/architecture.svg" width="800"/>
+</p>
 
 ---
 
 ## *:･✧WebSocket Message Flow
 
-```
-Client joins room
-    --> Server adds client to room
-    --> Server sends latest code state (sync)
-
-Client edits code
-    --> Sends "code-change" event
-    --> Server applies OT, publishes to room
-    --> All other clients in room receive update
-
-Client moves cursor
-    --> Sends "cursor-move" event
-    --> Server broadcasts to room
-    --> Remote cursors rendered in other editors
-
-Client sends chat
-    --> Sends "chat" event
-    --> Broadcast to room with username + timestamp
-```
+<p align="center">
+  <img src="./diagrams/websocket-flow.svg" width="800"/>
+</p>
 
 ---
 
@@ -102,34 +73,9 @@ Each edit is expressed as an **operation** — an `insert` or `delete` at a char
 
 ## *:･✧Project Structure
 
-```
-|-- client/
-|   |-- src/
-|   |   |-- components/
-|   |   |   |-- layout/Editor.tsx        # Monaco editor wrapper
-|   |   |   |-- chat/Chat.tsx            # Chat panel
-|   |   |   `-- users/UserList.tsx       # Active users sidebar
-|   |   |-- ot.ts                        # OT logic (apply + transform)
-|   |   |-- sync.ts / syncManager.ts     # Client-side sync
-|   |   |-- cursor.ts / cursorManager.ts # Cursor tracking + rendering
-|   |   |-- socket.ts / socketEvents.ts  # WebSocket setup
-|   |   `-- App.tsx
-|   `-- Dockerfile
-|
-|-- server/
-|   `-- src/
-|       |-- socket/                      # WS setup, heartbeat, rate limit, validation
-|       |-- rooms/roomManager.ts         # Room join/leave/list
-|       |-- pubsub/pubsub.ts             # In-memory pub-sub
-|       |-- events/eventBus.ts           # Event registration + dispatch
-|       |-- handlers/                    # code, chat, cursor handlers
-|       |-- versioning/                  # Snapshots, deltas, diffs
-|       |-- execution/execute.ts         # Code execution (JS + Python)
-|       |-- logger/logger.ts             # Structured JSON logger
-|       `-- index.ts
-|
-`-- docker-compose.yml
-```
+<p align="center">
+  <img src="./diagrams/project-structure.svg" width="800"/>
+</p>
 
 ---
 
